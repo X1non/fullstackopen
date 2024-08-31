@@ -35,6 +35,22 @@ const App = () => {
     setBad(bad + 1)
   }
 
+  const averageFeedback = () => {
+    const score = ((good * 1) + (bad * -1)) / (good + neutral + bad)
+    if (isNaN(score)) {
+      return 0
+    }
+    return score 
+  }
+
+  const positiveFeedback = () => {
+    const percentage = (good / (good + neutral + bad)) * 100
+    if (isNaN(percentage)) {
+      return 0 + ' %' 
+    }
+    return percentage + ' %'
+  }
+
   return (
     <div>
       <Title text='give feedback'/>
@@ -46,6 +62,9 @@ const App = () => {
       <Feedback type='good' count={good} />
       <Feedback type='neutral' count={neutral} />
       <Feedback type='bad' count={bad} />
+      <Feedback type='all' count={good + neutral + bad} />
+      <Feedback type='average' count={averageFeedback()} />
+      <Feedback type='positive' count={positiveFeedback()} />
     </div>
   )
 }
