@@ -12,7 +12,7 @@ const Button = (props) => {
   )
 }
 
-const Feedback = (props) => {
+const Statistics = (props) => {
   return (
     <p>{props.type} {props.count}</p>
   )
@@ -59,12 +59,12 @@ const App = () => {
       <Button text='bad' handleClick={incrementBad}/>
 
       <Title text='statistics'/>
-      <Feedback type='good' count={good} />
-      <Feedback type='neutral' count={neutral} />
-      <Feedback type='bad' count={bad} />
-      <Feedback type='all' count={good + neutral + bad} />
-      <Feedback type='average' count={averageFeedback()} />
-      <Feedback type='positive' count={positiveFeedback()} />
+      <Statistics type='good' count={good} />
+      <Statistics type='neutral' count={neutral} />
+      <Statistics type='bad' count={bad} />
+      <Statistics type='all' count={good + neutral + bad} />
+      <Statistics type='average' count={averageFeedback()} />
+      <Statistics type='positive' count={positiveFeedback()} />
     </div>
   )
 }
