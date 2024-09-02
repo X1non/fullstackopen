@@ -12,9 +12,23 @@ const Button = (props) => {
   )
 }
 
-const Statistics = (props) => {
+const Statistics = ({ good, neutral, bad }) => {
+  const avg = ((good * 1) + (bad * -1)) / (good + neutral + bad)
+  const positive = (good / (good + neutral + bad)) * 100
+
+  if (good === 0 && neutral === 0 && bad === 0) {
+    return <p>No feedback given</p>
+  }
+
   return (
-    <p>{props.type} {props.count}</p>
+    <div>
+      <p>good {good}</p>
+      <p>neutral {neutral}</p>
+      <p>bad {bad}</p>
+      <p>all {good + neutral + bad}</p>
+      <p>average {avg}</p>
+      <p>positive {positive} %</p>
+    </div>
   )
 }
 
@@ -35,22 +49,6 @@ const App = () => {
     setBad(bad + 1)
   }
 
-  const averageFeedback = () => {
-    const score = ((good * 1) + (bad * -1)) / (good + neutral + bad)
-    if (isNaN(score)) {
-      return 0
-    }
-    return score 
-  }
-
-  const positiveFeedback = () => {
-    const percentage = (good / (good + neutral + bad)) * 100
-    if (isNaN(percentage)) {
-      return 0 + ' %' 
-    }
-    return percentage + ' %'
-  }
-
   return (
     <div>
       <Title text='give feedback'/>
@@ -59,12 +57,7 @@ const App = () => {
       <Button text='bad' handleClick={incrementBad}/>
 
       <Title text='statistics'/>
-      <Statistics type='good' count={good} />
-      <Statistics type='neutral' count={neutral} />
-      <Statistics type='bad' count={bad} />
-      <Statistics type='all' count={good + neutral + bad} />
-      <Statistics type='average' count={averageFeedback()} />
-      <Statistics type='positive' count={positiveFeedback()} />
+      <Statistics good={good} neutral={neutral} bad={bad} />
     </div>
   )
 }
