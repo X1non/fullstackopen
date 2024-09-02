@@ -25,16 +25,26 @@ const App = () => {
   ]
    
   const [selected, setSelected] = useState(0)
+  const [votes, setVotes] = useState(Array(anecdotes.length).fill(0))
 
   const nextRandomAnecdote = (min, max) => {
     const num = Math.floor(Math.random() * ((max - min) + 1)) + min
     // console.log(num)
     setSelected(num)
   }
+  const incrementVote = () => {
+    const newVotes = [...votes]
+    newVotes[selected] += 1
+    setVotes(newVotes)
+    // console.log(selected)
+    // console.log(newVotes)
+  }
 
   return (
     <div>
       <Anecdote text={anecdotes[selected]} />
+      <p>has {votes[selected]} votes</p>
+      <Button onClick={() => incrementVote()} text={'vote'} />
       <Button onClick={() => nextRandomAnecdote(0, anecdotes.length - 1)} text={'next anecdote'} />
     </div>
   )
