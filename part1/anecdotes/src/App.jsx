@@ -26,6 +26,7 @@ const App = () => {
    
   const [selected, setSelected] = useState(0)
   const [votes, setVotes] = useState(Array(anecdotes.length).fill(0))
+  const [mostVoted, setMostVoted] = useState(0)
 
   const nextRandomAnecdote = (min, max) => {
     const num = Math.floor(Math.random() * ((max - min) + 1)) + min
@@ -37,16 +38,27 @@ const App = () => {
     newVotes[selected] += 1
     setVotes(newVotes)
     // console.log(selected)
-    // console.log(newVotes)
+    // console.log('After increment', newVotes, mostVoted)
+    // console.log('Before set -> most voted: anecdote num-%s with %s votes', mostVoted, newVotes[mostVoted])
+    if (newVotes[selected] > newVotes[mostVoted]) {
+      setMostVoted(selected)
+    }
+    // console.log('current: anecdote num-%s with %s votes', selected, newVotes[selected])
+    // console.log('After set -> most voted: anecdote num-%s with %s votes', mostVoted, newVotes[mostVoted])
   }
 
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       <Anecdote text={anecdotes[selected]} />
       <p>has {votes[selected]} votes</p>
       <Button onClick={() => incrementVote()} text={'vote'} />
       <Button onClick={() => nextRandomAnecdote(0, anecdotes.length - 1)} text={'next anecdote'} />
-    </div>
+    
+      <h1>Anecdote with most votes</h1>
+      <Anecdote text={anecdotes[mostVoted]} />
+      <p>has {votes[mostVoted]} votes</p>
+      </div>
   )
 }
 
