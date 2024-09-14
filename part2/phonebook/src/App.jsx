@@ -20,15 +20,24 @@ const App = () => {
       })
   }, [])
 
+  const updatePersonNumber = (person) => {
+    const updatedPerson = { ...person, number: newNumber }
+    phonebookService
+      .updatePersonNumber(updatedPerson)
+      .then((updatedResult) => setPersons(persons.map(p => p.id === updatedPerson.id ? updatedResult : p)))
+  }
+
   const addPerson = (event) => {
     event.preventDefault()
-
-    // Assuming one name/person can have multiple numbers
     const arrNumbers = persons.map((person) => person.number)
+    const existedPerson = persons.find(p => p.name === newName)
+    
     if (arrNumbers.includes(newNumber)) {
-      alert(`${newNumber} is already added to phonebook`)
-    }
-    else {
+      alert(`${newNumber} is already exists in phonebook`)
+    } else if (existedPerson) {
+      if (confirm(`${existedPerson.name} is already added to phonebook, replace the old number with a new one?`)) 
+        updatePersonNumber(existedPerson)
+    } else {
       const newPerson = {
         name: newName,
         number: newNumber
