@@ -44,6 +44,25 @@ const App = () => {
     setNewName('')
     setNewNumber('')
   }
+
+  const deletePerson = (id) => {
+    const person = persons.find(p => p.id === id)
+    if (confirm(`Delete ${person.name} with phone number: "${person.number}" ?`)) {
+      phonebookService
+        .deletePerson(id)
+        .then(() => {
+          setPersons(persons.filter(p => {
+            if (p.id !== id) return p
+          }))
+        })
+        .catch((error) => {
+          alert(`${person.name} was already deleted from the server`)
+          // same, but less syntax needed
+          setPersons(persons.filter(p => p.id !== id))
+        })
+
+    }
+  }
   
   const handleNewName = (event) => {
     // console.log(event.target)
@@ -74,7 +93,7 @@ const App = () => {
         personNumber={newNumber} handlePersonNumber={handleNewNumber} />
       
       <h3>Numbers</h3>
-      <Persons personList={personShowed} />
+      <Persons personList={personShowed} personDelete={deletePerson} />
     </div>
   )
 }
