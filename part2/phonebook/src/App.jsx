@@ -4,12 +4,15 @@ import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
 
 import phonebookService from './services/phonebook'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [nameFilter, setNameFilter] = useState('')
+  const [notificationMsg, setNotificationMsg] = useState()
+  const [notificationAction, setNotificationAction] = useState()
   
   useEffect(() => {
     phonebookService
@@ -24,7 +27,15 @@ const App = () => {
     const updatedPerson = { ...person, number: newNumber }
     phonebookService
       .updatePersonNumber(updatedPerson)
-      .then((updatedResult) => setPersons(persons.map(p => p.id === updatedPerson.id ? updatedResult : p)))
+      .then((updatedResult) => { 
+        setPersons(persons.map(p => p.id === updatedPerson.id ? updatedResult : p))
+        setNotificationMsg(`Updated ${updatedPerson.name}`)
+        setNotificationAction('success')
+      })
+      .catch((error) => {
+        setNotificationMsg(`Information of ${updatedPerson.name} has already been removed from server`)
+        setNotificationAction('error')
+      })
   }
 
   const addPerson = (event) => {
@@ -33,7 +44,8 @@ const App = () => {
     const existedPerson = persons.find(p => p.name === newName)
     
     if (arrNumbers.includes(newNumber)) {
-      alert(`${newNumber} is already exists in phonebook`)
+      setNotificationMsg(`${newNumber} is already exists in phonebook`)
+      setNotificationAction('error')
     } else if (existedPerson) {
       if (confirm(`${existedPerson.name} is already added to phonebook, replace the old number with a new one?`)) 
         updatePersonNumber(existedPerson)
@@ -46,9 +58,16 @@ const App = () => {
         .addPerson(newPerson)
         .then(addedPerson => {
           // console.log(addedPerson)
-          setPersons(persons.concat(addedPerson))          
+          setPersons(persons.concat(addedPerson))  
+          setNotificationMsg(`Added ${addedPerson.name}`)
+          setNotificationAction('success')        
         })
     }
+    
+    setTimeout(() => {
+      setNotificationMsg(null)
+      setNotificationAction(null)
+    }, 5000)
     
     setNewName('')
     setNewNumber('')
@@ -63,14 +82,20 @@ const App = () => {
           setPersons(persons.filter(p => {
             if (p.id !== id) return p
           }))
+          setNotificationMsg(`Deleted ${person.name}`)
+          setNotificationAction('success')
         })
         .catch((error) => {
-          alert(`${person.name} was already deleted from the server`)
+          setNotificationMsg(`${person.name} was already deleted from the server`)
+          setNotificationAction('error')
           // same, but less syntax needed
           setPersons(persons.filter(p => p.id !== id))
         })
-
     }
+    setTimeout(() => {
+      setNotificationMsg(null)
+      setNotificationAction(null)
+    }, 5000)
   }
   
   const handleNewName = (event) => {
@@ -95,6 +120,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notificationMsg} type={notificationAction} />
       <Filter filterString={nameFilter} handleFilter={handleNameFilter} />
       
       <h3>Add a new</h3>
