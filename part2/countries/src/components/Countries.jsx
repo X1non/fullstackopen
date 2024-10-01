@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+// TODO: Exercise 2.19
 const Countries = ({ list }) => {
   const [countryDetail, setCountryDetail] = useState(
     list.reduce((acc, ele) => {
