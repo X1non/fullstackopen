@@ -1,20 +1,37 @@
+import { useState } from 'react'
+
 const Countries = ({ list }) => {
-  // console.log(list)
+  const [countryDetail, setCountryDetail] = useState(
+    list.reduce((acc, ele) => {
+      console.log(acc)
+      acc['name'] = ele.name.common
+      return acc
+    }, {})
+  )
+  
+  const handleShowDetail = () => {
+    console.log(list)
+    console.log(countryDetail)
+  }
+
+
   if (list.length > 10) {
     return <p>Too many matches, specify another filter</p>
   } else if (list.length > 1) {
     return ( 
       list.map((c) => {
         return (
-          <p key={c.name.common}>
-            {c.name.common}
-          </p>
+          <div key={c.name.common}>
+            {c.name.common} <button onClick={handleShowDetail}>show</button>
+          </div>
+          
         )
       })
     )
   } else if (list.length === 1) {
     const countryData = list[0]
     const countryLanguages = []
+    
     for (const lang in countryData.languages) {
       countryLanguages.push(countryData.languages[lang])
     }
