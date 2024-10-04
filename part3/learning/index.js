@@ -11,6 +11,9 @@ app.use(express.json())
 // in this case, backend and frontend use different ports
 app.use(cors())
 
+// middleware for express showing static content
+app.use(express.static('dist'))
+
 // middleware for logging request
 const requestLogger = (request, response, next) => {
   console.log('Method:', request.method)
