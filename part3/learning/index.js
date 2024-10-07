@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
+const path = require('path')
 
 // Middleware are functions that can be used for handling request and response objects.
 // express.json() is a middleware for retrieving data sent through request
@@ -12,10 +13,11 @@ app.use(express.json())
 app.use(cors())
 
 // middleware for express showing static content
-app.use(express.static('dist'))
+app.use(express.static(path.join(__dirname, 'dist')))
 
 // middleware for logging request
 const requestLogger = (request, response, next) => {
+  console.log('Incoming request for', request.originalUrl)
   console.log('Method:', request.method)
   console.log('Path:', request.path)
   console.log('Body:', request.body)
