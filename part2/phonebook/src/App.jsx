@@ -18,7 +18,6 @@ const App = () => {
     phonebookService
       .getPersons()
       .then(initPersons => {
-        // console.log(initPersons)
         setPersons(initPersons)
       })
   }, [])
@@ -56,10 +55,10 @@ const App = () => {
       }
       phonebookService
         .addPerson(newPerson)
-        .then(addedPerson => {
-          // console.log(addedPerson)
-          setPersons(persons.concat(addedPerson))  
-          setNotificationMsg(`Added ${addedPerson.name}`)
+        .then(newPersons => {
+          console.log(newPersons)
+          setPersons(newPersons)  
+          setNotificationMsg(`Added ${newPersons[newPersons.length - 1].name}`)
           setNotificationAction('success')        
         })
     }
@@ -99,12 +98,10 @@ const App = () => {
   }
   
   const handleNewName = (event) => {
-    // console.log(event.target)
     setNewName(event.target.value)
   }
 
   const handleNewNumber = (event) => {
-    // console.log(event.target)
     setNewNumber(event.target.value)
   }
 
