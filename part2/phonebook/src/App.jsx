@@ -55,10 +55,9 @@ const App = () => {
       }
       phonebookService
         .addPerson(newPerson)
-        .then(newPersons => {
-          console.log(newPersons)
-          setPersons(newPersons)  
-          setNotificationMsg(`Added ${newPersons[newPersons.length - 1].name}`)
+        .then(savedPerson => { 
+          setPersons(persons.concat(savedPerson))
+          setNotificationMsg(`Added ${savedPerson.name}`)
           setNotificationAction('success')        
         })
     }
