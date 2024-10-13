@@ -5,9 +5,6 @@ const path = require('path')
 const Note = require('./models/note')
 
 // Middleware are functions that can be used for handling request and response objects.
-// express.json() is a middleware for retrieving data sent through request
-// which is assigned into request object: request.body
-app.use(express.json())
 
 // middleware for allowing request from another/different origin
 // in this case, backend and frontend use different ports
@@ -15,6 +12,10 @@ app.use(cors())
 
 // middleware for express showing static content
 app.use(express.static(path.join(__dirname, 'dist')))
+
+// express.json() is a (json-parser) middleware for retrieving data sent through request
+// which is assigned into request object: request.body
+app.use(express.json())
 
 // middleware for logging request
 const requestLogger = (request, response, next) => {
@@ -38,10 +39,14 @@ app.get('/api/notes', (request, response) => {
   })
 })
 
-app.get('/api/notes/:id', (request, response) => {
+app.get('/api/notes/:id', (request, response, next) => {
   Note.findById(request.params.id).then(note => {
-    response.json(note)
-  })
+    if (note) {
+      response.json(note)
+    } else {
+      response.status(404).end()
+    }
+  }).catch(error => next(error))
 })
 
 app.post('/api/notes', (request, response) => {
@@ -63,11 +68,28 @@ app.post('/api/notes', (request, response) => {
   })
 })
 
-app.delete('/api/notes/:id', (request, response) => {
-  const id = request.params.id
-  notes = notes.filter(note => note.id !== id)
+app.put('/api/notes/:id', (request, response, next) => {
+  const body = request.body
 
-  response.status(204).end()
+  const note = {
+    content: body.content,
+    important: body.important
+  }
+
+  Note.findByIdAndUpdate(request.params.id, note, { new: true })
+    .then(updatedNote => {
+      response.json(updatedNote)
+    })
+    .catch(error => next(error))
+})
+
+app.delete('/api/notes/:id', (request, response) => {
+  Note.findByIdAndDelete(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
+
 })
 
 const PORT = process.env.PORT
@@ -81,3 +103,15 @@ const unknownEndpoint = (request, response) => {
 }
 
 app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+
+  next(error)
+}
+
+app.use(errorHandler)
