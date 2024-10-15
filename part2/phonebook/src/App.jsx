@@ -32,7 +32,8 @@ const App = () => {
         setNotificationAction('success')
       })
       .catch((error) => {
-        setNotificationMsg(`Information of ${updatedPerson.name} has already been removed from server`)
+        setNotificationMsg(`Error updating ${updatedPerson.name} data. 
+          ${error.response.data.error}`)
         setNotificationAction('error')
       })
   }
@@ -58,7 +59,11 @@ const App = () => {
         .then(savedPerson => { 
           setPersons(persons.concat(savedPerson))
           setNotificationMsg(`Added ${savedPerson.name}`)
-          setNotificationAction('success')        
+          setNotificationAction('success')
+        })
+        .catch(error => {
+          setNotificationMsg(`Error adding data. ${error.response.data.error}`)
+          setNotificationAction('error')
         })
     }
     
