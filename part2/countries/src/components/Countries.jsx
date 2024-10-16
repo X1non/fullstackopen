@@ -2,19 +2,43 @@ import { useState } from 'react'
 
 // TODO: Exercise 2.19
 const Countries = ({ list }) => {
-  const [countryDetail, setCountryDetail] = useState(
-    list.reduce((acc, ele) => {
-      console.log(acc)
-      acc['name'] = ele.name.common
-      return acc
-    }, {})
-  )
-  
-  const handleShowDetail = () => {
-    console.log(list)
-    console.log(countryDetail)
-  }
 
+  // Old Approach
+  // const [listCountry, setListCountry] = useState(
+  //   list.map(country => {
+  //     const cData = {
+  //       commonName: country.name.common,
+  //       capital: country.capital,
+  //       area: country.area,
+  //       languages: country.languages,
+  //       flagImage: country.flags.png,
+  //       isShowed: false
+  //     }
+  //     console.log(cData)
+  //     return cData
+  //   })
+  // )
+
+  const filteredCountry = list.map(country => {
+    const cData = {
+      commonName: country.name.common,
+      capital: country.capital,
+      area: country.area,
+      languages: country.languages,
+      flagImage: country.flags.png,
+      isShowed: false
+    }
+    console.log(cData)
+    return cData
+  })
+
+  const [listCountry, setListCountry] = useState(filteredCountry)
+  
+  const handleShowDetail = (countryName) => {
+    console.log(list)
+    console.log(countryName)
+    console.log(listCountry)
+  }
 
   if (list.length > 10) {
     return <p>Too many matches, specify another filter</p>
@@ -23,9 +47,8 @@ const Countries = ({ list }) => {
       list.map((c) => {
         return (
           <div key={c.name.common}>
-            {c.name.common} <button onClick={handleShowDetail}>show</button>
-          </div>
-          
+            {c.name.common} <button onClick={() => handleShowDetail(c.name.common)}>show</button>
+          </div>     
         )
       })
     )
