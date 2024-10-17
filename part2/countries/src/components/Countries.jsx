@@ -20,18 +20,18 @@ const Countries = ({ list }) => {
   }, [list])
   
   const handleShowDetail = (country) => {
-    const checkList = refinedCountryList
+    const checkList = [...refinedCountryList]
 
     for (const c in checkList) {
-      if (refinedCountryList[c] === country) {
+      if (checkList[c] === country) {
         const newCountry = {
           ...country,
           isShowed: !country.isShowed
         }
         checkList[c] = newCountry
+        break
       }
     }
-
     setRefinedCountryList(checkList)
   }
 
@@ -44,22 +44,25 @@ const Countries = ({ list }) => {
     for (const k in c.languages) {
       countryLangs.push(c.languages[k])
     }
-
     return (
       <div key={c.commonName}>
-        {c.commonName} <button onClick={() => handleShowDetail(c)}>{c.isShowed ? 'unshow' : 'show'}</button>
-        <div className={c.isShowed ? 'details' : 'details hide'}>
-          <h2>{c.commonName}</h2>
-
-          <p>capital {c.capital}</p>
-          <p>area {c.area}</p>
-    
-          <h4>languages:</h4>             
-          <ul>
-            {countryLangs.map((lang) => <li key={lang}>{lang}</li>)}
-          </ul>
-          <img src={c.flagImage} width={150}/>        
-        </div>
+        {refinedCountryList.length !== 1 && 
+          <div>
+            {c.commonName} <button onClick={() => handleShowDetail(c)}>{c.isShowed ? 'unshow' : 'show'}</button>
+          </div>
+        }
+        {(c.isShowed || refinedCountryList.length === 1) && 
+          <div>
+            <h2>{c.commonName}</h2>
+            <p>capital {c.capital}</p>
+            <p>area {c.area}</p>
+            <h4>languages:</h4>             
+            <ul>
+              {countryLangs.map((lang) => <li key={lang}>{lang}</li>)}
+            </ul>
+            <img src={c.flagImage} width={150}/>        
+          </div> 
+        } 
       </div>
     )
   })
