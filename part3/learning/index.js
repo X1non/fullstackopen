@@ -60,15 +60,13 @@ app.post('/api/notes', (request, response, next) => {
   note.save().then(savedNote => {
     response.json(savedNote)
   })
-  .catch(error => next(error))
+    .catch(error => next(error))
 })
 
 app.put('/api/notes/:id', (request, response, next) => {
   const { content, important } = request.body
 
-  Note.findByIdAndUpdate(request.params.id, 
-    { content, important }, 
-    { new: true, runValidators: true, context: 'query' }
+  Note.findByIdAndUpdate(request.params.id, { content, important }, { new: true, runValidators: true, context: 'query' }
   )
     .then(updatedNote => {
       response.json(updatedNote)
@@ -76,9 +74,9 @@ app.put('/api/notes/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-app.delete('/api/notes/:id', (request, response) => {
+app.delete('/api/notes/:id', (request, response, next) => {
   Note.findByIdAndDelete(request.params.id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch(error => next(error))
@@ -92,7 +90,7 @@ app.listen(PORT, () => {
 
 // middleware for directing user into unknown request endpoints
 const unknownEndpoint = (request, response) => {
-  response.status(404).send({ error: 'unknown endpoint'})
+  response.status(404).send({ error: 'unknown endpoint' })
 }
 
 app.use(unknownEndpoint)
