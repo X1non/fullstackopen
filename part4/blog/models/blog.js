@@ -1,28 +1,22 @@
 const mongoose = require('mongoose')
 
-const mongoUrl = process.env.MONGODB_URI
-
-mongoose.set('strictQuery', false)
-
-console.log('connecting to', mongoUrl)
-
-mongoose.connect(mongoUrl)
-  .then(() => {
-    console.log('connected to MongoDB')
-  }).catch(error => {
-    console.log('error connecting to MongoDB:', error.message)
-  })
-
 const blogSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
   },
-  author: String,
-  url: String,
+  author: { 
+    type: String,
+    default: 'Anonymous'
+  },
+  url: { 
+    type: String,
+    default: '-'
+  },
   likes: {
     type: Number,
-    min: 0
+    min: 0,
+    default: 0
   }
 })
 
