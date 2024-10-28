@@ -28,8 +28,16 @@ test('blogs are returned as json', async () => {
 
 test('there are two blogs', async () => {
   const response = await api.get('/api/blogs')
-
   assert.strictEqual(response.body.length, helper.initialBlogs.length)
+})
+
+test('there is unique identifier of each blog', async () => {
+  const response = await api.get('/api/blogs')
+  const blogs = response.body
+  blogs.map((blog) => {
+    console.log(blog)
+    assert(Object.hasOwn(blog, 'id'))
+  })
 })
 
 after(async () => {
