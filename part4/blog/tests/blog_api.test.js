@@ -35,9 +35,27 @@ test('there is unique identifier of each blog', async () => {
   const response = await api.get('/api/blogs')
   const blogs = response.body
   blogs.map((blog) => {
-    console.log(blog)
     assert(Object.hasOwn(blog, 'id'))
   })
+})
+
+test('new blog successfully saved into database', async () => {
+  const newBlog = {
+    title: 'This is a new blog',
+    author: 'Newcomer'
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const savedBlogs = await helper.blogsInDb()
+  assert.strictEqual(savedBlogs.length, helper.initialBlogs.length + 1)
+
+  const titles = savedBlogs.map(blog => blog.title)
+  assert(titles.includes('This is a new blog'))
 })
 
 after(async () => {
