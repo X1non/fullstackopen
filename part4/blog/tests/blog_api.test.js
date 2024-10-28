@@ -42,7 +42,9 @@ test('there is unique identifier of each blog', async () => {
 test('new blog successfully saved into database', async () => {
   const newBlog = {
     title: 'This is a new blog',
-    author: 'Newcomer'
+    author: 'Newcomer',
+    url: 'new-blog.com',
+    likes: '10'
   }
 
   await api
@@ -56,6 +58,24 @@ test('new blog successfully saved into database', async () => {
 
   const titles = savedBlogs.map(blog => blog.title)
   assert(titles.includes('This is a new blog'))
+})
+
+test('new blog automatically includes like property that defaults to 0', async () => {
+  const newBlog = {
+    title: 'This is a new blog',
+    author: 'Newcomer',
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const savedBlogs = await helper.blogsInDb()
+
+  const recentlySaved = savedBlogs.find(blog => blog.title === 'This is a new blog')
+  assert.strictEqual(recentlySaved.likes, 0)
 })
 
 after(async () => {
