@@ -3,15 +3,15 @@ const mongoose = require('mongoose')
 const blogSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: true,
+    required: true
   },
   author: { 
     type: String,
     default: 'Anonymous'
   },
   url: { 
-    type: String,
-    required: true
+    type: String
+    // required: true --> This one cause ValidationError even though its provided
   },
   likes: {
     type: Number,
