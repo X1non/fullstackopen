@@ -6,6 +6,7 @@ const info = (...params) => {
 }
 
 const error = (...params) => {
+  // console.log('YOOOOOOOOOO BLOG 2!')
   if (process.env.NODE_ENV !== 'test') {
     console.error(...params)
   }
