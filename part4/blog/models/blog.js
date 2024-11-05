@@ -10,8 +10,8 @@ const blogSchema = new mongoose.Schema({
     default: 'Anonymous'
   },
   url: { 
-    type: String
-    // required: true --> This one cause ValidationError even though its provided
+    type: String,
+    required: true // --> This one cause ValidationError even though its provided
   },
   likes: {
     type: Number,
