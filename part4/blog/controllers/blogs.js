@@ -1,7 +1,6 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
-const User = require('../models/user')
-const jwt = require('jsonwebtoken')
+const middleware = require('../utils/middleware')
 
 blogsRouter.get('/', async (request, response, next) => {
   const blogs = await Blog.find({})
@@ -11,17 +10,9 @@ blogsRouter.get('/', async (request, response, next) => {
   response.json(blogs)
 })
 
-blogsRouter.post('/', async (request, response, next) => {
+blogsRouter.post('/', middleware.userExtractor, async (request, response, next) => {
   const body = request.body
-  const decodedToken = jwt.verify(request.token, process.env.SECRET)
-
-  // We should handle token verification on jwt.verify return value.
-  // Then we need to specify id because jwt.verify could still return
-  // other values
-  if (!decodedToken.id) {
-    return response.status(401).json({ error: 'invalid token' })
-  }
-  const user = await User.findById(decodedToken.id)
+  const user = request.user
 
   const blog = new Blog({
     title: body.title,
@@ -30,7 +21,6 @@ blogsRouter.post('/', async (request, response, next) => {
     likes: body.likes,
     user: user._id // no need whole user object, just user._id
   })
-
 
   try {
     const savedBlog = await blog.save()
@@ -61,20 +51,19 @@ blogsRouter.put('/:id', async (request, response, next) => {
   response.json(updatedBlog)
 })
 
-blogsRouter.delete('/:id', async (request, response, next) => {
-  const decodedToken = jwt.verify(request.token, process.env.SECRET)
-  if (!decodedToken.id) {
-    return response.status(401).json({ error: 'invalid token' })
-  }
+blogsRouter.delete('/:id', middleware.userExtractor, async (request, response, next) => {
+  const user = request.user
 
-  const user = await User.findById(decodedToken.id)
   const blogToDelete = await Blog.findById(request.params.id)
-
-  if (blogToDelete.user._id.toString() !== user._id.toString()) {
+  if (!blogToDelete) {
+    return response.status(400).json({ error: 'blog not found'})
+  } else if (blogToDelete.user._id.toString() !== user._id.toString()) {
     return response.status(401).json({ error: 'delete is not allowed as you are not the creator' })
-  }
+  } 
+  await blogToDelete.deleteOne().catch(error => next(error))
   
-  const deletedBlog = await blogToDelete.deleteOne().catch(error => next(error))
+  user.blogs = user.blogs.filter(blog => blog._id.toString() !== request.params.id)
+  await user.save()
   response.sendStatus(204).end()
 
 })
