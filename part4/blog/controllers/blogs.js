@@ -3,33 +3,17 @@ const Blog = require('../models/blog')
 const User = require('../models/user')
 const jwt = require('jsonwebtoken')
 
-const getToken = (token) => {
-  if (token && token.startsWith('Bearer ')) {
-    return token.replace('Bearer ', '')
-  }
-  return null
-}
-
 blogsRouter.get('/', async (request, response, next) => {
   const blogs = await Blog.find({})
     .populate('user', ['id', 'username', 'name'])
     .catch(error => next(error))
-
-  // const userToken = getToken(request.headers.authorization)
-
-  // const decodedToken = jwt.verify(userToken, process.env.SECRET)
-  // console.log(decodedToken)
-
-  // const user = await User.findById(decodedToken.id)
-  // console.log(user)
 
   response.json(blogs)
 })
 
 blogsRouter.post('/', async (request, response, next) => {
   const body = request.body
-  const userToken = getToken(request.headers.authorization)
-  const decodedToken = jwt.verify(userToken, process.env.SECRET)
+  const decodedToken = jwt.verify(request.token, process.env.SECRET)
 
   // We should handle token verification on jwt.verify return value.
   // Then we need to specify id because jwt.verify could still return
@@ -47,11 +31,16 @@ blogsRouter.post('/', async (request, response, next) => {
     user: user._id // no need whole user object, just user._id
   })
 
-  const savedBlog = await blog.save()
-  user.blogs = user.blogs.concat(savedBlog._id) // also this, only its _id needed
-  await user.save()
+
+  try {
+    const savedBlog = await blog.save()
+    user.blogs = user.blogs.concat(savedBlog._id) // also this, only its _id needed
+    await user.save()
+    response.status(201).json(savedBlog)
+  } catch (e) {
+    return next(e)
+  }
   
-  response.status(201).json(savedBlog)
 })
 
 blogsRouter.put('/:id', async (request, response, next) => {
