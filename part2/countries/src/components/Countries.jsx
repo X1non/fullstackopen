@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react'
 
+import weatherService from '../services/weathers'
+
 const Countries = ({ list }) => {
   const [refinedCountryList, setRefinedCountryList] = useState([])
+  const [countryWeather, setCountryWeather] = useState(null)
 
   useEffect(() => {
     setRefinedCountryList(
@@ -12,11 +15,23 @@ const Countries = ({ list }) => {
           area: country.area,
           languages: country.languages,
           flagImage: country.flags.png,
+          latlng: country.capitalInfo.latlng,
           isShowed: false
         }
         return countryData
       })
     )
+
+    if (list.length === 1) {
+      weatherService.getCountryWeather(list[0].capitalInfo.latlng[0], list[0].capitalInfo.latlng[1])
+        .then((weatherData) => {
+          setCountryWeather({
+            temp: weatherData.main.temp,
+            wind: weatherData.wind.speed,
+            icon: weatherData.weather[0].icon
+          })
+        })
+    }
   }, [list])
   
   const handleShowDetail = (country) => {
@@ -62,7 +77,16 @@ const Countries = ({ list }) => {
             </ul>
             <img src={c.flagImage} width={150}/>        
           </div> 
-        } 
+        }
+        {refinedCountryList.length === 1 && countryWeather &&
+          <div>
+            <h3>Weather in {c.capital}</h3>
+            <p>temperature {countryWeather.temp} celcius</p>           
+            <img src={`https://openweathermap.org/img/wn/${countryWeather.icon}@2x.png`} />
+            <p>wind {countryWeather.wind} m/s</p>        
+          </div> 
+        }
+
       </div>
     )
   })
